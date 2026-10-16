@@ -1,51 +1,51 @@
-import { LockKeyhole, Gift, Database, Cookie, UserRoundCheck, PhoneCall } from 'lucide-react'
+import { ShieldCheck, Heart, Database, FileLock, UserCheck, PhoneCall } from 'lucide-react'
 import { PolicyPage } from './Terms'
 
 const privacyData = [
   {
-    id: 'info',
-    heading: '1. Information We Collect',
-    icon: LockKeyhole,
-    shortText: 'Personal details required for processing customized orders.',
-    details: 'We collect essential personal information including your full name, phone number, email address, delivery address, and customization details (such as engraved names or photos uploaded for Rakhis).'
+    id: 'donor-info',
+    heading: '1. Donor & Patient Information We Collect',
+    icon: FileLock,
+    shortText: 'Clinical and demographic records necessary for transfusion safety.',
+    details: 'We collect relevant details including donor and patient full name, age, contact number, residential locality in Jaipur, ABO blood group, Rh factor, and basic medical screening indicators essential for pre-transfusion verification.'
   },
   {
-    id: 'usage',
-    heading: '2. How We Use Data',
-    icon: Gift,
-    shortText: 'Used exclusively for order fulfillment & delivery updates.',
-    details: 'Your information is used solely to process personalized orders, print shipping labels, send order tracking updates via WhatsApp/SMS, and continuously improve our website experience.'
+    id: 'data-usage',
+    heading: '2. Purpose of Data Processing',
+    icon: Heart,
+    shortText: 'Used exclusively for life-saving matches and emergency dispatch.',
+    details: 'Collected records are used strictly to coordinate urgent blood requirements, verify cross-matching compatibility, communicate rapid donation requests during acute shortages, and maintain mandatory blood bank registers.'
   },
   {
-    id: 'protection',
-    heading: '3. Data Protection',
+    id: 'confidentiality',
+    heading: '3. Clinical Data Confidentiality',
+    icon: ShieldCheck,
+    shortText: 'Strict compliance with medical confidentiality standards.',
+    details: 'Individual donor screening outcomes, infectious marker testing reports, and patient health histories are treated as privileged clinical data. Test outcomes are never published or shared publicly under any circumstances.'
+  },
+  {
+    id: 'data-security',
+    heading: '4. Record Storage & System Security',
     icon: Database,
-    shortText: 'Strict security measures with zero third-party selling.',
-    details: 'We implement industry-standard encryption protocols to safeguard your data. We never sell, rent, or share your personal details with unrelated third parties or marketing agencies.'
+    shortText: 'Protected internal systems with zero commercial disclosure.',
+    details: 'We maintain secure electronic registries and physical archives in compliance with statutory blood transfusion guidelines. We do not sell, lease, or distribute personal contact information to third-party marketing services.'
   },
   {
-    id: 'cookies',
-    heading: '4. Cookies & Analytics',
-    icon: Cookie,
-    shortText: 'Session cookies to remember cart items and preferences.',
-    details: 'We use functional cookies to enhance your browsing experience, keep track of items in your shopping bag, and collect anonymous traffic insights to optimize website speed.'
+    id: 'donor-rights',
+    heading: '5. Donor Consent & Communication Control',
+    icon: UserCheck,
+    shortText: 'Voluntary participation with the option to update alert preferences.',
+    details: 'Registering as a voluntary donor is entirely consensual. Donors retain the choice to update contact availability, change relocation areas across Jaipur, or withdraw from voluntary call alerts at any time.'
   },
   {
-    id: 'rights',
-    heading: '5. Your Data Rights',
-    icon: UserRoundCheck,
-    shortText: 'Full control to request data updates or account deletion.',
-    details: 'You have the right to access, modify, or request the complete deletion of your personal contact details from our records at any time by contacting our support team.'
-  },
-  {
-    id: 'contact',
-    heading: '6. Privacy Concerns',
+    id: 'grievance',
+    heading: '6. Privacy Inquiries & Coordination',
     icon: PhoneCall,
-    shortText: 'Dedicated support for privacy & security questions.',
-    details: 'If you have any questions or concerns regarding our privacy practices, please contact us directly at +91 6367077048 or email support@bamalitrendz.com.'
+    shortText: 'Direct support from our Vaishali Nagar administrative desk.',
+    details: 'For questions regarding data maintenance, donor registry verification, or privacy protocols, reach our administrative team at +91 9610940283 or visit the blood centre office at Chitrakoot, Vaishali Nagar, Jaipur.'
   }
 ]
 
 export default function Privacy() {
-  return <PolicyPage title="Privacy Policy" items={privacyData} />
+  return <PolicyPage title="Privacy Policy & Medical Confidentiality" items={privacyData} />
 }

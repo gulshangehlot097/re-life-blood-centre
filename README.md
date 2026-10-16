@@ -1,6 +1,6 @@
-# Bamali Trendz
+# re-life-blood-centre
 
-React + Vite + Tailwind CSS v4 website for Bamali Trendz.
+React + Vite + Tailwind CSS v4 website for re-life-blood-centre.
 
 ## Run
 
