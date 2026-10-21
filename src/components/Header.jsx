@@ -1,7 +1,7 @@
 import { Link, NavLink } from 'react-router-dom'
 import { Menu, X, MapPin, Phone, Droplet, AlertCircle, HeartHandshake, ChevronDown } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import logo from '../assets/mainlogo.png'
+import logo from '../assets/main-logo.png'
 
 const servicesList = [
   { name: 'Voluntary Blood Donation Camps', path: '/services#camps' },

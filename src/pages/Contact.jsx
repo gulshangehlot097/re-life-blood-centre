@@ -3,7 +3,7 @@ import {
   MapPin, Phone, Clock, MessageSquare, ExternalLink, 
   ShieldCheck, HeartHandshake, ChevronDown, Droplet, Building2
 } from 'lucide-react'
-import contactImage from '../assets/heroimg.png'
+import contactImage from '../assets/hero-image.png'
 
 export default function Contact() {
   const [openFaq, setOpenFaq] = useState(null)

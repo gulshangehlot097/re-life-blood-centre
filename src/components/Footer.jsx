@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { MapPin, Phone, Clock, Heart, Droplet, ArrowRight } from 'lucide-react'
-import logo from '../assets/mainlogo.png'
+import logo from '../assets/main-logo.png'
 
 export default function Footer() {
   return (

@@ -1,7 +1,7 @@
 
-import { useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from "framer-motion"
 import {
   ArrowRight,
   Check,
@@ -22,46 +22,97 @@ import {
   ThermometerSnowflake,
   Microscope,
   Truck,
-  Sparkle
+  Sparkle,
+  ArrowUpRight,
+  UserCheck,
+  Flame,
+  Snowflake,
+  Layers,
+  Zap,
+  CheckCircle2
 } from 'lucide-react'
-import heroImage from '../assets/heroimg.png'
+import heroImage from '../assets/hero-image.png'
 
-const coreBloodServices = [
+const allServicesData = [
   {
-    id: 1,
-    name: 'Whole Blood Units',
-    badge: 'Critical Care',
-    desc: 'Unseparated sterile whole blood units for acute surgical trauma and emergency resuscitation.'
+    id: "vbdc",
+    name: "Voluntary Blood Donation Camps",
+    badge: "Community Outreach",
+    desc: "Corporate, educational, and residential mobile donation drives with complete logistics and certified clinical staff.",
+    icon: HeartHandshake,
+    category: "Camps & Drives",
+    availability: "Scheduled",
+    color: "from-rose-500/10 to-transparent"
   },
   {
-    id: 2,
-    name: 'Packed Red Blood Cells',
-    badge: 'High Demand',
-    desc: 'Leukoreduced PRBC units providing maximum oxygen carrying capacity for severe anemia and surgery.'
+    id: "donor-reg",
+    name: "Donor Registration",
+    badge: "Lifesaver Network",
+    desc: "Rapid digital onboarding, rare blood group phenotyping, and automated call-up alerts during critical shortages.",
+    icon: UserCheck,
+    category: "Donor Registry",
+    availability: "Active 24x7",
+    color: "from-blue-500/10 to-transparent"
   },
   {
-    id: 3,
-    name: 'Single Donor Platelets',
-    badge: 'Apheresis Lab',
-    desc: 'High-yield platelet concentrates harvested for oncology, dengue, and acute thrombocytopenia.'
+    id: "req-comp",
+    name: "Blood Requirements Component",
+    badge: "Crossmatch Suite",
+    desc: "Precision allocation matching recipient antibodies with vetted inventory units within minutes for emergency orders.",
+    icon: Activity,
+    category: "Crossmatch",
+    availability: "Immediate",
+    color: "from-amber-500/10 to-transparent"
   },
   {
-    id: 4,
-    name: 'Fresh Frozen Plasma',
-    badge: 'Deep Frozen',
-    desc: 'Clotting factor rich plasma maintained below -30°C for burn management and coagulation disorders.'
+    id: "whole-blood",
+    name: "Whole Blood",
+    badge: "Critical Resuscitation",
+    desc: "Sterile whole blood units for acute surgical trauma, massive hemorrhage protocols, and emergency volume replacement.",
+    icon: Flame,
+    category: "Whole Unit",
+    availability: "Stocked",
+    color: "from-red-500/10 to-transparent"
   },
   {
-    id: 5,
-    name: 'Random Donor Platelets',
-    badge: 'Emergency Stock',
-    desc: 'Rapid recovery platelet units prepared from certified whole blood donations across Jaipur.'
+    id: "prbc",
+    name: "Packed Red Blood Cells (PRBC)",
+    badge: "Hematology & Surgery",
+    desc: "Leukoreduced concentrated erythrocytes with additive solution for severe chronic anemia and major surgical blood loss.",
+    icon: Droplet,
+    category: "Concentrate",
+    availability: "Constant",
+    color: "from-rose-500/10 to-transparent"
   },
   {
-    id: 6,
-    name: 'Donor Screening & Camps',
-    badge: 'Community Drives',
-    desc: 'Mobile voluntary donation camps and comprehensive cross-matching lab diagnostics.'
+    id: "ffp",
+    name: "Fresh Frozen Plasma (FFP)",
+    badge: "Coagulation Factor",
+    desc: "Rapid blast-frozen plasma kept below -30°C to preserve labile factors V, VIII, and fibrinogen for burn care.",
+    icon: Snowflake,
+    category: "Cryo Storage",
+    availability: "Temp-Controlled",
+    color: "from-cyan-500/10 to-transparent"
+  },
+  {
+    id: "rdp",
+    name: "Random Donor Platelets (RDP)",
+    badge: "Platelet Therapy",
+    desc: "Fractionated from whole blood donations, kept on continuous agitation at 20°C to 24°C for acute thrombocytopenia.",
+    icon: Layers,
+    category: "Platelet Unit",
+    availability: "Agitated Storage",
+    color: "from-purple-500/10 to-transparent"
+  },
+  {
+    id: "sdp",
+    name: "Single Donor Platelet (SDP)",
+    badge: "Apheresis High-Yield",
+    desc: "High-yield automated apheresis platelet concentrate providing a full therapeutic dose from a single matched donor.",
+    icon: Zap,
+    category: "Apheresis",
+    availability: "On-Demand & Ready",
+    color: "from-emerald-500/10 to-transparent"
   }
 ]
 
@@ -70,7 +121,7 @@ const facilityHighlights = [
     icon: Activity,
     tag: 'Haemonetics Tech',
     title: 'Automated Apheresis Unit',
-    description: 'Precision cell separators harvesting single donor platelets (SDP) and plasma with zero donor discomfort and high therapeutic yield.'
+    description: 'Precision cell separators harvesting single donor platelets and plasma with zero donor discomfort and high therapeutic yield.'
   },
   {
     icon: ThermometerSnowflake,
@@ -119,9 +170,55 @@ const donationSteps = [
   }
 ]
 
+// Zero-crash native scroll counter
+function ScrollCounter({ end, duration = 2, suffix = '' }) {
+  const [count, setCount] = useState(0)
+  const ref = useRef(null)
+  const started = useRef(false)
+
+  useEffect(() => {
+    const node = ref.current
+    if (!node) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !started.current) {
+          started.current = true
+          let startTime = null
+
+          const step = (timestamp) => {
+            if (!startTime) startTime = timestamp
+            const progress = Math.min((timestamp - startTime) / (duration * 1000), 1)
+            const easeOut = 1 - (1 - progress) * (1 - progress)
+            setCount(Math.floor(easeOut * end))
+
+            if (progress < 1) {
+              requestAnimationFrame(step)
+            } else {
+              setCount(end)
+            }
+          }
+
+          requestAnimationFrame(step)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 }
+    )
+
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [end, duration])
+
+  return (
+    <span ref={ref} className="tabular-nums inline-block">
+      {count.toLocaleString('en-IN')}{suffix}
+    </span>
+  )
+}
+
 export default function Home() {
-  const [showAllServices, setShowAllServices] = useState(false)
-  const visibleServices = showAllServices ? coreBloodServices : coreBloodServices.slice(0, 4)
+  const visibleServices = allServicesData.slice(0, 4)
 
   return (
     <main className="bg-surface min-h-screen text-ink selection:bg-primary selection:text-white overflow-hidden">
@@ -293,66 +390,116 @@ export default function Home() {
         </div>
       </section>
 
-      {/* clinical pillars bar */}
+      {/* benefits quick strip */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-2">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 rounded-2xl border border-line bg-white p-4 shadow-2xs">
-          <Benefit icon={<ShieldCheck />} title="Sterile Processing" text="Automated cell separation" />
-          <Benefit icon={<Activity />} title="Apheresis Unit" text="SDP & PRP availability" />
-          <Benefit icon={<Clock />} title="24x7 Emergency" text="Instant hospital dispatch" />
-          <Benefit icon={<Users />} title="Donor Network" text="Voluntary camp drives" />
+          <Benefit 
+            icon={<ShieldCheck className="animate-pulse text-emerald-600" />} 
+            title="Sterile Processing" 
+            text="Automated cell separation" 
+          />
+          <Benefit 
+            icon={<Activity className="animate-bounce [animation-duration:2s] text-rose-500" />} 
+            title="Apheresis Unit" 
+            text="SDP & PRP availability" 
+          />
+          <Benefit 
+            icon={<Clock className="animate-spin [animation-duration:8s] text-amber-500" />} 
+            title="24x7 Emergency" 
+            text="Instant hospital dispatch" 
+          />
+          <Benefit 
+            icon={<Users className="animate-bounce [animation-duration:2.5s] text-blue-600" />} 
+            title="Donor Network" 
+            text="Voluntary camp drives" 
+          />
         </div>
       </section>
 
       {/* clinical infrastructure showcase section */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        <div className="rounded-3xl border border-line bg-white p-6 sm:p-10 shadow-sm">
+      <section className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
+        <div className="absolute top-1/2 left-10 -translate-y-1/2 w-72 h-72 bg-rose-500/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 right-10 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="max-w-2xl mb-10">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-light px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
-              <Sparkle size={13} className="text-primary" /> Advanced Medical Infrastructure
-            </span>
-            <h2 className="mt-3 font-display text-2xl sm:text-3xl font-extrabold text-ink">
-              Clinical Technology Built for Zero Compromise
-            </h2>
-            <p className="mt-1.5 text-xs sm:text-sm text-ink-muted leading-relaxed">
+        <div className="relative rounded-3xl border border-slate-200/80 bg-gradient-to-b from-white via-slate-50/40 to-white p-6 sm:p-12 shadow-sm overflow-hidden">
+          
+          <div 
+            className="absolute inset-0 opacity-[0.03] pointer-events-none"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, black 1px, transparent 0)`,
+              backgroundSize: "24px 24px"
+            }} 
+          />
+
+          <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12 pb-8 border-b border-slate-100">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-rose-100 bg-rose-50/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-rose-700">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-600"></span>
+                </span>
+                Advanced Medical Infrastructure
+              </div>
+              
+              <h2 className="mt-4 font-display text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900 leading-[1.2]">
+                Clinical Technology Built for <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-rose-900">Zero Compromise</span>
+              </h2>
+            </div>
+
+            <p className="max-w-md text-xs sm:text-sm text-slate-500 leading-relaxed font-normal">
               Every unit of blood processed at Re Life Blood Centre undergoes rigorous mechanical fractionation, cold chain monitoring, and certified immuno-hematology assays.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {facilityHighlights.map((facility, index) => {
-              const Icon = facility.icon
+              const Icon = facility.icon;
+              const formattedIndex = String(index + 1).padStart(2, "0");
+
               return (
                 <motion.div
                   key={index}
-                  whileHover={{ y: -6 }}
-                  transition={{ duration: 0.2 }}
-                  className="rounded-2xl border border-line bg-surface p-6 flex flex-col justify-between hover:border-primary/40 hover:bg-white hover:shadow-lg transition-all"
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.35, delay: index * 0.08 }}
+                  className="group relative rounded-2xl border border-slate-200/90 bg-white p-6 flex flex-col justify-between transition-all duration-300 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-200/50"
                 >
                   <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="h-12 w-12 rounded-xl bg-primary-light text-primary flex items-center justify-center">
-                        <Icon size={24} />
+                    <div className="flex items-center justify-between mb-5">
+                      <div className="relative flex items-center justify-center h-12 w-12 rounded-xl bg-slate-900 text-white shadow-sm transition-transform duration-300 group-hover:scale-105 group-hover:bg-rose-600">
+                        <Icon size={22} strokeWidth={1.9} />
                       </div>
-                      <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-white border border-line text-brand-blue">
-                        {facility.tag}
-                      </span>
+
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-mono font-medium text-slate-400">
+                          {formattedIndex}
+                        </span>
+                        <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200/60">
+                          {facility.tag}
+                        </span>
+                      </div>
                     </div>
 
-                    <h3 className="font-display text-base font-bold text-ink">
+                    <h3 className="font-display text-base font-bold text-slate-900 group-hover:text-rose-600 transition-colors duration-200">
                       {facility.title}
                     </h3>
-                    <p className="mt-2 text-xs leading-relaxed text-ink-muted">
+
+                    <p className="mt-2 text-xs leading-relaxed text-slate-500">
                       {facility.description}
                     </p>
                   </div>
 
-                  <div className="mt-6 pt-3 border-t border-line/60 flex items-center gap-1.5 text-[11px] font-bold text-primary">
-                    <span>Clinical Grade</span>
-                    <Check size={14} className="text-brand-green" />
+                  <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                    <div className="flex items-center gap-1.5 font-medium text-emerald-700 bg-emerald-50/80 px-2 py-0.5 rounded">
+                      <Check size={13} className="text-emerald-600 stroke-[2.5]" />
+                      <span>Clinical Grade</span>
+                    </div>
+
+                    <ArrowUpRight size={15} className="text-slate-300 group-hover:text-rose-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200" />
                   </div>
                 </motion.div>
-              )
+              );
             })}
           </div>
 
@@ -360,71 +507,127 @@ export default function Home() {
       </section>
 
       {/* blood services section */}
-      <section id="services" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-        <div className="bg-white rounded-3xl border border-line p-5 sm:p-8 lg:p-10 shadow-xs">
-
-          <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-line pb-5">
+      <section id="services" className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
+        <div className="relative rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-10 lg:p-12 shadow-sm">
+          
+          <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-slate-100">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-primary">
+              <div className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-rose-700">
+                <Sparkles size={12} className="text-rose-600" />
                 Re Life Blood Banking
-              </span>
-              <h2 className="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-ink">
+              </div>
+
+              <h2 className="mt-3 font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900">
                 Essential Blood Components &amp; Services
               </h2>
+              <p className="mt-2 text-xs sm:text-sm text-slate-500 max-w-xl">
+                From automated apheresis units to routine community collection camps, every component is rigorously tested, fractionated, and cold-chain preserved.
+              </p>
             </div>
 
-            <button
-              onClick={() => setShowAllServices(v => !v)}
-              className="inline-flex items-center gap-2 text-xs font-bold text-primary transition hover:text-primary-dark hover:translate-x-1 cursor-pointer w-fit"
+            <Link
+              to="/services"
+              className="group inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-white text-xs font-bold text-slate-800 shadow-2xs hover:shadow transition-all duration-200 cursor-pointer w-fit"
             >
-              <span>{showAllServices ? 'Show Less' : 'View All Components'}</span>
-              <ArrowRight size={16} />
-            </button>
+              <span>View All {allServicesData.length} Services</span>
+              <ArrowRight size={14} className="group-hover:translate-x-1 text-rose-600 transition-transform duration-200" />
+            </Link>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             <AnimatePresence>
-              {visibleServices.map(service => (
-                <motion.div
-                  key={service.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.3 }}
-                  whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                  className="group relative flex flex-col justify-between rounded-2xl border border-line bg-surface p-5 hover:border-primary/40 hover:bg-white hover:shadow-lg transition-colors"
-                >
-                  <div>
-                    <span className="inline-block rounded-full bg-primary-light px-2.5 py-0.5 text-[10px] font-bold text-primary">
-                      {service.badge}
-                    </span>
-                    <h3 className="mt-3 text-base font-bold text-ink group-hover:text-primary transition-colors">
-                      {service.name}
-                    </h3>
-                    <p className="mt-2 text-xs text-ink-muted leading-relaxed">
-                      {service.desc}
-                    </p>
-                  </div>
+              {visibleServices.map((service, index) => {
+                const Icon = service.icon;
+                const formattedIndex = String(index + 1).padStart(2, "0");
 
-                  <div className="mt-5 pt-3 border-t border-line flex items-center justify-between">
-                    <Link
-                      to="/services"
-                      className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
-                    >
-                      Details <ArrowRight size={12} />
-                    </Link>
-                    <a
-                      href="tel:+919610940283"
-                      className="rounded-lg bg-primary/10 p-2 text-primary hover:bg-primary hover:text-white transition"
-                      title="Request unit"
-                    >
-                      <Droplet size={14} className="fill-current" />
-                    </a>
-                  </div>
-                </motion.div>
-              ))}
+                return (
+                  <motion.div
+                    key={service.id}
+                    layout
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.3, delay: index * 0.04 }}
+                    whileHover={{ y: -5 }}
+                    className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-gradient-to-b from-white via-white to-slate-50/50 p-6 transition-all duration-300 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-200/60"
+                  >
+                    <div className={`absolute inset-x-0 top-0 h-1.5 rounded-t-2xl bg-gradient-to-r ${service.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+
+                    <div>
+                      <div className="flex items-center justify-between mb-5">
+                        <div className="relative flex items-center justify-center h-12 w-12 rounded-xl bg-slate-900 text-white shadow-sm transition-transform duration-300 group-hover:scale-105 group-hover:bg-rose-600">
+                          <Icon size={22} strokeWidth={1.8} />
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-[11px] font-semibold text-slate-400">
+                            #{formattedIndex}
+                          </span>
+                          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200/70">
+                            {service.category}
+                          </span>
+                        </div>
+                      </div>
+
+                      <span className="inline-block text-[11px] font-bold text-rose-700 bg-rose-50 border border-rose-100 px-2.5 py-0.5 rounded-full mb-2">
+                        {service.badge}
+                      </span>
+
+                      <h3 className="font-display text-base font-bold text-slate-900 group-hover:text-rose-600 transition-colors duration-200 leading-snug">
+                        {service.name}
+                      </h3>
+
+                      <p className="mt-2.5 text-xs text-slate-500 leading-relaxed font-normal">
+                        {service.desc}
+                      </p>
+                    </div>
+
+                    <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-700 bg-emerald-50/80 px-2 py-0.5 rounded">
+                        <CheckCircle2 size={12} className="text-emerald-600" />
+                        <span>{service.availability}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Link
+                          to="/services"
+                          className="text-xs font-bold text-slate-700 hover:text-rose-600 flex items-center gap-1 transition-colors"
+                        >
+                          Info <ArrowRight size={12} />
+                        </Link>
+
+                        <a
+                          href="tel:+919610940283"
+                          className="rounded-lg bg-slate-100 p-2 text-slate-700 hover:bg-rose-600 hover:text-white transition-all shadow-2xs"
+                          title="Direct SOS Blood Request"
+                        >
+                          <PhoneCall size={13} />
+                        </a>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </AnimatePresence>
+          </motion.div>
+
+          <div className="mt-8 rounded-2xl bg-slate-900 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-white">
+            <div className="flex items-center gap-3 text-center sm:text-left">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white shadow">
+                <Droplet size={20} className="fill-current" />
+              </div>
+              <div>
+                <p className="text-sm font-bold">Need an immediate unit or custom component reservation?</p>
+                <p className="text-xs text-slate-400">Our round-the-clock transfusion dispatch desk is accessible 24/7.</p>
+              </div>
+            </div>
+            <a
+              href="tel:+919610940283"
+              className="shrink-0 rounded-xl bg-rose-600 hover:bg-rose-700 px-4 py-2.5 text-xs font-bold text-white transition-colors flex items-center gap-2 shadow-sm"
+            >
+              <PhoneCall size={14} />
+              <span>Emergency Line: +91 96109 40283</span>
+            </a>
           </div>
 
         </div>
@@ -474,7 +677,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* about spotlight */}
+      {/* about spotlight with scroll counting */}
       <section id="about" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         <div className="rounded-3xl border border-line bg-gradient-to-br from-white via-red-50/20 to-surface p-6 sm:p-10 lg:p-12 shadow-xs">
           <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-12">
@@ -542,20 +745,21 @@ export default function Home() {
               </Link>
             </div>
 
+            {/* Scroll-triggered stats */}
             <div className="flex flex-col gap-4 md:col-span-12 lg:col-span-3">
               <Stat
                 icon={<HeartHandshake size={24} className="text-primary" />}
-                value="5,000+"
+                value={<ScrollCounter end={5000} suffix="+" />}
                 label="Registered Donors"
               />
               <Stat
                 icon={<Droplet size={24} className="text-brand-blue fill-current" />}
-                value="12,500+"
+                value={<ScrollCounter end={12500} suffix="+" />}
                 label="Units Dispatched"
               />
               <Stat
                 icon={<Clock size={24} className="text-brand-green" />}
-                value="24x7"
+                value={<><ScrollCounter end={24} />x7</>}
                 label="Emergency Response"
               />
             </div>
@@ -650,7 +854,9 @@ function Stat({ icon, value, label }) {
       className="flex flex-col items-center justify-center p-5 rounded-2xl border border-line bg-white shadow-2xs"
     >
       <div>{icon}</div>
-      <strong className="mt-2 text-xl font-extrabold text-ink font-display">{value}</strong>
+      <div className="mt-2 text-xl font-extrabold text-ink font-display">
+        {value}
+      </div>
       <span className="text-xs font-semibold text-ink-muted">{label}</span>
     </motion.div>
   )

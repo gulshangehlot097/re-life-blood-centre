@@ -3,7 +3,7 @@ import {
   Heart, ShieldCheck, Droplet, FileCheck2, AlertCircle, PhoneCall,
   MapPin, Clock, FileText, ChevronRight, UserCheck, Activity
 } from 'lucide-react'
-import logo from '../assets/mainlogo.png'
+import logo from '../assets/main-logo.png'
 
 const termsData = [
   {
